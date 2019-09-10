@@ -1,6 +1,5 @@
-package com.delaroystudios.paginationinfinitescroll;
+package com.delaroystudios.paginationinfinitescroll.Views;
 
-import android.content.Context;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,9 +11,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.delaroystudios.paginationinfinitescroll.R;
 import com.delaroystudios.paginationinfinitescroll.adapter.PaginationAdapter;
-import com.delaroystudios.paginationinfinitescroll.api.Client;
-import com.delaroystudios.paginationinfinitescroll.api.Service;
 import com.delaroystudios.paginationinfinitescroll.entity.Movie;
 import com.delaroystudios.paginationinfinitescroll.entity.MoviesResponse;
 import com.delaroystudios.paginationinfinitescroll.presenter.Presenter;
@@ -22,8 +20,6 @@ import com.delaroystudios.paginationinfinitescroll.utils.PaginationScrollListene
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {

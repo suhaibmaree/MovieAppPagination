@@ -1,6 +1,6 @@
 package com.delaroystudios.paginationinfinitescroll.presenter;
 
-import com.delaroystudios.paginationinfinitescroll.MainActivity;
+import com.delaroystudios.paginationinfinitescroll.Views.MainActivity;
 import com.delaroystudios.paginationinfinitescroll.entity.MoviesResponse;
 import com.delaroystudios.paginationinfinitescroll.model.MovieAPIListener;
 import com.delaroystudios.paginationinfinitescroll.model.MovieModel;
