@@ -1,4 +1,4 @@
-package com.delaroystudios.paginationinfinitescroll.entity;
+package com.delaroystudios.paginationinfinitescroll.entitys;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -59,7 +59,7 @@ public class Movie implements Parcelable {
         this.voteAverage = voteAverage;
     }
 
-    public Movie(){
+    public Movie() {
 
     }
 
@@ -72,7 +72,7 @@ public class Movie implements Parcelable {
     };
 
     public String getPosterPath() {
-        return  posterPath;
+        return posterPath;
     }
 
     public void setPosterPath(String posterPath) {

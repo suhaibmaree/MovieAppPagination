@@ -1,4 +1,4 @@
-package com.delaroystudios.paginationinfinitescroll.entity;
+package com.delaroystudios.paginationinfinitescroll.entitys;
 
 import android.os.Parcel;
 import android.os.Parcelable;

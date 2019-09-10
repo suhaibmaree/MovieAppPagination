@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import com.delaroystudios.paginationinfinitescroll.R;
 
-public class SplashScrean extends AppCompatActivity {
+public class SplashScreen extends AppCompatActivity {
     private static int SPLASH_TIME_OUT = 2000;
 
     @Override
@@ -18,7 +18,7 @@ public class SplashScrean extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent homeIntent = new Intent(SplashScrean.this, MainActivity.class);
+                Intent homeIntent = new Intent(SplashScreen.this, MainActivity.class);
                 startActivity(homeIntent);
                 finish();
             }

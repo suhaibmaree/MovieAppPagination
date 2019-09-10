@@ -1,8 +1,11 @@
-package com.delaroystudios.paginationinfinitescroll.adapter;
+package com.delaroystudios.paginationinfinitescroll.adapters;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +19,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.delaroystudios.paginationinfinitescroll.R;
-import com.delaroystudios.paginationinfinitescroll.entity.Movie;
+import com.delaroystudios.paginationinfinitescroll.entitys.Movie;
+import com.delaroystudios.paginationinfinitescroll.utils.HaveNetworks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +30,17 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private static final int ITEM = 0;
     private static final int LOADING = 1;
+    private static final int Failed = 2;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
 
+    private HaveNetworks mHaveNetworks;
     private List<Movie> movieResults;
-    private Context context;
+    private Context mContext;
 
     private boolean isLoadingAdded = false;
 
     public PaginationAdapter(Context context) {
-        this.context = context;
+        this.mContext = context;
         movieResults = new ArrayList<>();
     }
 
@@ -53,28 +59,28 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (viewType) {
             case ITEM:
-                viewHolder = getViewHolder(parent, inflater);
+                View v1 = inflater.inflate(R.layout.item_list, parent, false);
+                viewHolder = new MovieVH(v1);
                 break;
             case LOADING:
                 View v2 = inflater.inflate(R.layout.item_progress, parent, false);
                 viewHolder = new LoadingVH(v2);
                 break;
+            case Failed:
+                View v3 = inflater.inflate(R.layout.item_faild, parent, false);
+                viewHolder = new LoadingFailedVH(v3);
+                break;
         }
         return viewHolder;
     }
 
-    @NonNull
-    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater) {
-        RecyclerView.ViewHolder viewHolder;
-        View v1 = inflater.inflate(R.layout.item_list, parent, false);
-        viewHolder = new MovieVH(v1);
-        return viewHolder;
-    }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         Movie result = movieResults.get(position); // Movie
+
+
 
         switch (getItemViewType(position)) {
             case ITEM:
@@ -92,7 +98,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 
                 Glide
-                        .with(context)
+                        .with(mContext)
                         .load(BASE_URL_IMG + result.getPosterPath())
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
@@ -117,7 +123,9 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
 
             case LOADING:
-//                Do nothing
+                //Do nothing
+                break;
+            case Failed:
                 break;
         }
 
@@ -130,14 +138,29 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+
+
+        mHaveNetworks = new HaveNetworks(mContext);
+        boolean network_online = mHaveNetworks.haveNetwork();
+
+
+        if (!network_online) {
+            Log.d("5555555555", "hiiiiiiiiiii: ");
+            return (position == movieResults.size() - 1 && isLoadingAdded) ? Failed : ITEM;
+        }
+
+        else
+            return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+
     }
 
 
-    /*
-   Helpers
-   _________________________________________________________________________________________________
-    */
+    /***
+     *
+     *  Helpers
+     *    _________________________________________________________________________________________________
+     */
+
 
     public void add(Movie r) {
         movieResults.add(r);
@@ -191,12 +214,10 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return movieResults.get(position);
     }
 
-
-   /*
-   View Holders
-   _________________________________________________________________________________________________
-    */
-
+    /***
+     * View Holders
+     *    _________________________________________________________________________________________________
+     */
 
     protected class MovieVH extends RecyclerView.ViewHolder {
         private TextView mMovieTitle;
@@ -220,6 +241,14 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     protected class LoadingVH extends RecyclerView.ViewHolder {
 
         public LoadingVH(View itemView) {
+            super(itemView);
+        }
+    }
+
+
+    protected class LoadingFailedVH extends RecyclerView.ViewHolder {
+
+        public LoadingFailedVH(View itemView) {
             super(itemView);
         }
     }

@@ -1,6 +1,7 @@
 package com.delaroystudios.paginationinfinitescroll.Views;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,10 +13,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.delaroystudios.paginationinfinitescroll.R;
-import com.delaroystudios.paginationinfinitescroll.adapter.PaginationAdapter;
-import com.delaroystudios.paginationinfinitescroll.entity.Movie;
-import com.delaroystudios.paginationinfinitescroll.entity.MoviesResponse;
-import com.delaroystudios.paginationinfinitescroll.presenter.Presenter;
+import com.delaroystudios.paginationinfinitescroll.adapters.PaginationAdapter;
+import com.delaroystudios.paginationinfinitescroll.entitys.Movie;
+import com.delaroystudios.paginationinfinitescroll.entitys.MoviesResponse;
+import com.delaroystudios.paginationinfinitescroll.presenters.Presenter;
+import com.delaroystudios.paginationinfinitescroll.utils.HaveNetworks;
 import com.delaroystudios.paginationinfinitescroll.utils.PaginationScrollListener;
 
 import java.util.List;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private int TOTAL_PAGES = 5;
     private int currentPage = PAGE_START;
     private Presenter mPresenter;
-//    private Service movieService;
+//    private MovieService movieService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mPresenter = new Presenter(MainActivity.this,currentPage);
+                        mPresenter = new Presenter(MainActivity.this, currentPage);
                     }
                 }, 1000);
             }
@@ -82,90 +84,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //init service and load data
-//        movieService = Client.getClient().create(Service.class);
-
-        mPresenter = new Presenter(this,currentPage);
+        mPresenter = new Presenter(this, currentPage);
 
     }
 
 
-//    private void loadFirstPage() {
-//        Log.d(TAG, "loadFirstPage: ");
-//
-//        callTopRatedMoviesApi().enqueue(new Callback<MoviesResponse>() {
-//            @Override
-//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-//                // Got data. Send it to adapter
-//                if(currentPage == 1) {
-//                    List<Movie> results = fetchResults(response);
-//                    progressBar.setVisibility(View.GONE);
-//                    adapter.addAll(results);
-//
-//                    if (currentPage <= response.body().getTotalPages()) adapter.addLoadingFooter();
-//                    else isLastPage = true;
-//                }
-//                else if (currentPage > 1){
-//                    adapter.removeLoadingFooter();
-//                    isLoading = false;
-//
-//                    List<Movie> results = fetchResults(response);
-//                    adapter.addAll(results);
-//
-//                    if (currentPage != response.body().getTotalPages()) adapter.addLoadingFooter();
-//                    else isLastPage = true;
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-//                t.printStackTrace();
-//
-//            }
-//        });
-//
-//    }
+    public void loadPage(List<Movie> results, int total) {
 
-    public void loadPage(List<Movie> results, int total){
+        if(new HaveNetworks(this).haveNetwork()) {
 
-        if(currentPage == 1) {
-            progressBar.setVisibility(View.GONE);
-            adapter.addAll(results);
+            if (currentPage == 1) {
+                progressBar.setVisibility(View.GONE);
+                adapter.addAll(results);
 
-            if (currentPage <= total) adapter.addLoadingFooter();
-            else isLastPage = true;
-        }
-        else if (currentPage > 1){
-            adapter.removeLoadingFooter();
-            isLoading = false;
-            adapter.addAll(results);
+                if (currentPage <= total)
+                    adapter.addLoadingFooter();
+                else isLastPage = true;
+            } else if (currentPage > 1) {
+                adapter.removeLoadingFooter();
+                isLoading = false;
+                adapter.addAll(results);
 
-            if (currentPage != total) adapter.addLoadingFooter();
-            else isLastPage = true;
+                if (currentPage != total) adapter.addLoadingFooter();
+                else isLastPage = true;
+            }
+        }else {
+            adapter.addLoadingFooter();
         }
     }
 
-
-
-    private List<Movie> fetchResults(Response<MoviesResponse> response) {
-        MoviesResponse topRatedMovies = response.body();
-        Log.d(TAG,"Total pages: " + response.body().getTotalPages() );
-        return topRatedMovies.getResults();
-    }
-
-
-
-
-//    private Call<MoviesResponse> callTopRatedMoviesApi() {
-//        return movieService.getTopRatedMovies(
-//                getString(R.string.api_key),
-//                currentPage
-//        );
-//    }
-
-
-    public String getAPIKey(){
-       return getString(R.string.api_key);
+    public String getAPIKey() {
+        return getString(R.string.api_key);
     }
 
     public void showMessage(String msg) {
