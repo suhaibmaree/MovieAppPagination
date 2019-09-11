@@ -1,15 +1,18 @@
 package com.delaroystudios.paginationinfinitescroll.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -18,6 +21,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.delaroystudios.paginationinfinitescroll.R;
 import com.delaroystudios.paginationinfinitescroll.Views.MainActivity;
+import com.delaroystudios.paginationinfinitescroll.Views.MovieDetails;
 import com.delaroystudios.paginationinfinitescroll.entitys.Movie;
 import com.delaroystudios.paginationinfinitescroll.utils.HaveNetworks;
 
@@ -31,7 +35,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int LOADING = 1;
     private static final int FAILED = 2;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
-    private static final String TAG ="PaginationAdapter";
+    public static final String TAG ="PaginationAdapter";
 
     private List<Movie> movieResults;
     private MainActivity mContext;
@@ -68,7 +72,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case FAILED:
                 mContext.setLoading(false);
                 View v3 = inflater.inflate(R.layout.item_faild, parent, false);
-                viewHolder = new LoadingVH(v3);
+                viewHolder = new FailedVH(v3);
                 break;
         }
         return viewHolder;
@@ -103,27 +107,27 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
 
                 Glide
-                        .with(mContext)
-                        .load(BASE_URL_IMG + result.getPosterPath())
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    .with(mContext)
+                    .load(BASE_URL_IMG + result.getPosterPath())
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
 
-                                movieVH.mProgress.setVisibility(View.GONE);
-                                return false;
-                            }
+                            movieVH.mProgress.setVisibility(View.GONE);
+                            return false;
+                        }
 
-                            @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                // image ready, hide progress now
-                                movieVH.mProgress.setVisibility(View.GONE);
-                                return false;   // return false if you want Glide to handle everything else.
-                            }
-                        })
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-                        .centerCrop()
-                        .crossFade()
-                        .into(movieVH.mPosterImg);
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            // image ready, hide progress now
+                            movieVH.mProgress.setVisibility(View.GONE);
+                            return false;   // return false if you want Glide to handle everything else.
+                        }
+                    })
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
+                    .centerCrop()
+                    .crossFade()
+                    .into(movieVH.mPosterImg);
 
                 break;
 
@@ -235,6 +239,22 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             mYear = (TextView) itemView.findViewById(R.id.movie_year);
             mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
             mProgress = (ProgressBar) itemView.findViewById(R.id.movie_progress);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION){
+                        Movie movie = movieResults.get(pos);
+                        Intent intent = new Intent(mContext, MovieDetails.class);
+                        intent.putExtra("movie",movie);
+                        mContext.startActivity(intent);
+                        Toast.makeText(view.getContext(),movie.getOriginalTitle(),
+                                Toast.LENGTH_LONG).show();
+
+                    }
+                }
+            });
         }
     }
 
@@ -242,6 +262,13 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     protected class LoadingVH extends RecyclerView.ViewHolder {
 
         public LoadingVH(View itemView) {
+            super(itemView);
+        }
+    }
+
+    protected class FailedVH extends RecyclerView.ViewHolder {
+
+        public FailedVH(View itemView) {
             super(itemView);
         }
     }

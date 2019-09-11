@@ -21,6 +21,8 @@ android {
         it.buildConfigField 'String', 'THE_MOVIE_DB_API_TOKEN', MyTheMovieDBApiToken
     }
 
+
+
 }
 
 dependencies {
