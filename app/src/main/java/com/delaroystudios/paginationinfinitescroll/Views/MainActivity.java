@@ -37,10 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int PAGE_START = 1;
     private boolean isLoading = false;
     private boolean isLastPage = false;
-    private int TOTAL_PAGES = 5;
+    private int TOTAL_PAGES = 1;
     private int currentPage = PAGE_START;
     private Presenter mPresenter;
-//    private MovieService movieService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean isLoading() {
+
                 return isLoading;
             }
         });
@@ -90,9 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadPage(List<Movie> results, int total) {
-
         if(new HaveNetworks(this).haveNetwork()) {
-
             if (currentPage == 1) {
                 progressBar.setVisibility(View.GONE);
                 adapter.addAll(results);
@@ -119,10 +117,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void showMessage(String msg) {
 
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_SHORT).show();
 
 
     }
 
-
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
 }
