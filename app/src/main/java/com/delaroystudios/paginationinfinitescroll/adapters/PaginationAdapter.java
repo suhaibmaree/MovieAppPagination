@@ -252,6 +252,8 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         Toast.makeText(view.getContext(),movie.getOriginalTitle(),
                                 Toast.LENGTH_LONG).show();
 
+                        mContext.finish();
+
                     }
                 }
             });
