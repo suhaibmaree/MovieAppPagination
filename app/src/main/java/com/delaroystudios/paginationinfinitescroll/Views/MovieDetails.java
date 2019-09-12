@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -44,7 +46,7 @@ public class MovieDetails extends AppCompatActivity {
         BaindUI();
 
 
-    }
+    }// end onCreate
 
 
     public void setupUI(){
@@ -58,7 +60,7 @@ public class MovieDetails extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                //startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 finish();
             }
         });
@@ -70,7 +72,7 @@ public class MovieDetails extends AppCompatActivity {
         mPlotSynopsis = (TextView) findViewById(R.id.plotsynopsis);
         mReleaseData = (TextView) findViewById(R.id.releasedate);
         mRatingBar = (RatingBar) findViewById(R.id.userrating);
-    }
+    } //end setup UI
 
     public void BaindUI(){
 
@@ -94,10 +96,26 @@ public class MovieDetails extends AppCompatActivity {
             mRatingBar.setRating((float) rating/2);
 
 
-        }// end binding UI
+        }
         else {
             Toast.makeText(this,"No API Data",Toast.LENGTH_SHORT).show();
         }
-    }
+    } // end binding UI
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    } //end onCreate option menu
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.share_button:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    } //end on option item selected
 }
