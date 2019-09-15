@@ -1,11 +1,11 @@
-package com.delaroystudios.paginationinfinitescroll.Views;
+package com.suhaib.pagination.Views;
 
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.delaroystudios.paginationinfinitescroll.R;
+import com.suhaib.pagination.R;
 
 public class SplashScreen extends AppCompatActivity {
     private static int SPLASH_TIME_OUT = 2000;

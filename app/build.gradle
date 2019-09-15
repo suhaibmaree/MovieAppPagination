@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.delaroystudios.paginationinfinitescroll"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -39,4 +39,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'junit:junit:4.12'
+
+    // required
+    implementation 'io.branch.sdk.android:library:3.+'
+
+
 }

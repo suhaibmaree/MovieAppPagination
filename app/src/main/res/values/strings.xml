@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Movie App</string>
-    <string name="api_key">b4999fff82a03f767ca4f5fb9ab9521f</string>
+    <string name="api_key" translatable="false">b4999fff82a03f767ca4f5fb9ab9521f</string>
     <string name="trailer">Trailer</string>
     <string name="reviews">Reviews</string>
     <string name="poster_path">https://image.tmdb.org/t/p/w185</string>
+    <string name="try_again">TRY AGAIN</string>
 
 </resources>

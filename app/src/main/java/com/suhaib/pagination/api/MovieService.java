@@ -1,6 +1,6 @@
-package com.delaroystudios.paginationinfinitescroll.api;
+package com.suhaib.pagination.api;
 
-import com.delaroystudios.paginationinfinitescroll.entitys.MoviesResponse;
+import com.suhaib.pagination.entitys.MoviesResponse;
 
 
 import retrofit2.Call;

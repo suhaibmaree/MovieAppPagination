@@ -1,4 +1,4 @@
-package com.delaroystudios.paginationinfinitescroll.Views;
+package com.suhaib.pagination.Views;
 
 import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -16,13 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.delaroystudios.paginationinfinitescroll.R;
-import com.delaroystudios.paginationinfinitescroll.entitys.Movie;
+import com.suhaib.pagination.R;
+import com.suhaib.pagination.entitys.Movie;
+
+import org.json.JSONObject;
+
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
 
 public class MovieDetails extends AppCompatActivity {
 
     private Movie mMovie;
-    public static final String TAG ="MovieDetails";
+    public static final String TAG = "MovieDetails";
     private CollapsingToolbarLayout mCollapsingToolbarLayout = null;
     private Intent mIntent;
     private Toolbar mToolbar;
@@ -36,11 +41,10 @@ public class MovieDetails extends AppCompatActivity {
     private RatingBar mRatingBar;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView( R.layout.activity_movie_details);
+        setContentView(R.layout.activity_movie_details);
 
         setupUI();
         BaindUI();
@@ -49,18 +53,17 @@ public class MovieDetails extends AppCompatActivity {
     }// end onCreate
 
 
-    public void setupUI(){
+    public void setupUI() {
 
-        Log.d(TAG,"parcelable move" );
+        Log.d(TAG, "parcelable move");
         mIntent = getIntent();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        android.support.v7.app.ActionBar actionBar =getSupportActionBar();
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(getApplicationContext(),MainActivity.class));
                 finish();
             }
         });
@@ -74,9 +77,9 @@ public class MovieDetails extends AppCompatActivity {
         mRatingBar = (RatingBar) findViewById(R.id.userrating);
     } //end setup UI
 
-    public void BaindUI(){
+    public void BaindUI() {
 
-        if(mIntent.hasExtra("movie")){
+        if (mIntent.hasExtra("movie")) {
 
             mMovie = mIntent.getParcelableExtra("movie");
 
@@ -85,7 +88,7 @@ public class MovieDetails extends AppCompatActivity {
             double rating = mMovie.getVoteAverage();
             String dateOfRelease = mMovie.getReleaseDate();
 
-            Log.d(TAG,"parcelable move poster path: " + getString(R.string.poster_path)+mMovie.getPosterPath());
+            Log.d(TAG, "parcelable move poster path: " + getString(R.string.poster_path) + mMovie.getPosterPath());
             Glide.with(this)
                     .load(getString(R.string.poster_path) + mMovie.getPosterPath())
                     .into(mPosterImage);
@@ -93,29 +96,62 @@ public class MovieDetails extends AppCompatActivity {
             mNameOfMovie.setText(movieName);
             mPlotSynopsis.setText(synopsis);
             mReleaseData.setText(dateOfRelease);
-            mRatingBar.setRating((float) rating/2);
+            mRatingBar.setRating((float) rating / 2);
 
 
-        }
-        else {
-            Toast.makeText(this,"No API Data",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
         }
     } // end binding UI
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.main_menu,menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     } //end onCreate option menu
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.share_button:
                 break;
         }
         return super.onOptionsItemSelected(item);
     } //end on option item selected
-}
+
+
+    /***
+     * Branch IO
+     */
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Branch init
+        Branch instance = Branch.getInstance();
+        if (instance != null) {
+            instance.initSession(new Branch.BranchReferralInitListener() {
+                @Override
+                public void onInitFinished(JSONObject referringParams, BranchError error) {
+                    if (error == null) {
+                        Log.i("BRANCH SDK", referringParams.toString());
+                        // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
+                        // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
+                    } else {
+                        Log.i("BRANCH SDK", error.getMessage());
+                    }
+                }
+            }, this.getIntent().getData(), this);
+        }
+    }
+
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        this.setIntent(intent);
+    }
+
+}//end details class

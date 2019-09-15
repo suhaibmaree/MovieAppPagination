@@ -1,7 +1,8 @@
-package com.delaroystudios.paginationinfinitescroll.utils;
+package com.suhaib.pagination.utils;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 
 public abstract class PaginationScrollListener extends RecyclerView.OnScrollListener {
@@ -27,6 +28,9 @@ public abstract class PaginationScrollListener extends RecyclerView.OnScrollList
                     && totalItemCount >= getTotalPageCount()) {
                 loadMoreItems();
             }
+        }
+        else {
+            Log.d("PaginationScroll","false");
         }
 
     }

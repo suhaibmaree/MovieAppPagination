@@ -1,14 +1,12 @@
-package com.delaroystudios.paginationinfinitescroll.adapters;
+package com.suhaib.pagination.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,11 +17,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.delaroystudios.paginationinfinitescroll.R;
-import com.delaroystudios.paginationinfinitescroll.Views.MainActivity;
-import com.delaroystudios.paginationinfinitescroll.Views.MovieDetails;
-import com.delaroystudios.paginationinfinitescroll.entitys.Movie;
-import com.delaroystudios.paginationinfinitescroll.utils.HaveNetworks;
+import com.suhaib.pagination.R;
+import com.suhaib.pagination.Views.MainActivity;
+import com.suhaib.pagination.Views.MovieDetails;
+import com.suhaib.pagination.entitys.Movie;
+import com.suhaib.pagination.utils.HaveNetworksUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +36,11 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public static final String TAG ="PaginationAdapter";
 
     private List<Movie> movieResults;
-    private MainActivity mContext;
+    private Context mContext;
 
     private boolean isLoadingAdded = false;
 
-    public PaginationAdapter(MainActivity mView) {
+    public PaginationAdapter(Context mView) {
         this.mContext = mView;
         movieResults = new ArrayList<>();
     }
@@ -70,7 +68,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 viewHolder = new LoadingVH(v2);
                 break;
             case FAILED:
-                mContext.setLoading(false);
+                ((MainActivity)mContext).setLoading(false);
                 View v3 = inflater.inflate(R.layout.item_faild, parent, false);
                 viewHolder = new FailedVH(v3);
                 break;
@@ -78,13 +76,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return viewHolder;
     }
 
-//    @NonNull
-//    private RecyclerView.ViewHolder getViewHolder(ViewGroup parent, LayoutInflater inflater) {
-//        RecyclerView.ViewHolder viewHolder;
-//        View v1 = inflater.inflate(R.layout.item_list, parent, false);
-//        viewHolder = new MovieVH(v1);
-//        return viewHolder;
-//    }
+
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
@@ -150,11 +142,11 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public int getItemViewType(int position) {
         Log.d(TAG,"getItemCount " + position);
-        if(new HaveNetworks(mContext).haveNetwork()) {
+        if(HaveNetworksUtils.haveNetwork(mContext)) {
             Log.d(TAG,"getItemCount have internet" + position);
             return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
         }else{
-            mContext.setLoading(false);
+            ((MainActivity)mContext).setLoading(false);
             return (position == movieResults.size() - 1 && isLoadingAdded) ? FAILED : ITEM;
         }
     }

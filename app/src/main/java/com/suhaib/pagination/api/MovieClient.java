@@ -1,4 +1,4 @@
-package com.delaroystudios.paginationinfinitescroll.api;
+package com.suhaib.pagination.api;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

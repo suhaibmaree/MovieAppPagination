@@ -1,4 +1,4 @@
-package com.delaroystudios.paginationinfinitescroll;
+package com.suhaib.pagination;
 
 import org.junit.Test;
 

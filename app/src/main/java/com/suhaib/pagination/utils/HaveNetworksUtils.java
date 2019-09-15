@@ -1,21 +1,17 @@
-package com.delaroystudios.paginationinfinitescroll.utils;
+package com.suhaib.pagination.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
-public class HaveNetworks {
-
-    private Context mContext;
-    private boolean have_WIFI = false;
-    private boolean have_MOBILEDATA = false;
-
-    public HaveNetworks(Context mContext) {
-         this.mContext =mContext;
-    }//end have network
+public class HaveNetworksUtils {
 
 
-    public boolean haveNetwork() {
+    public static boolean haveNetwork(Context mContext) {
+        boolean have_WIFI = false;
+        boolean have_MOBILEDATA = false;
+
 
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -37,10 +33,9 @@ public class HaveNetworks {
 
         }// end forLoop
 
+        Log.d("HaveNetworksUtils", (have_MOBILEDATA || have_WIFI) + "");
         return have_MOBILEDATA || have_WIFI;
     }//end have network
-
-
 
 
 }
