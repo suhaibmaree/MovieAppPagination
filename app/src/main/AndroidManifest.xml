@@ -10,6 +10,7 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:name="io.branch.referral.BranchApp"
         android:theme="@style/AppTheme">
         <activity
             android:name="com.suhaib.pagination.Views.MovieDetails"
@@ -33,6 +34,15 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+            <!-- Branch App Links (optional) -->
+            <intent-filter >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="c01s4.test-app.link" />
+                <data android:scheme="https" android:host="c01s4-alternate.test-app.link" />
             </intent-filter>
 
         </activity>

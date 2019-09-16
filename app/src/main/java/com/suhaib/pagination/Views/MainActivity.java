@@ -1,11 +1,14 @@
 package com.suhaib.pagination.Views;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -23,6 +26,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements MovieView {
 
     private static final String TAG = "MainActivity";
+    private static String KEY_MSG = TAG + ".KEY_MAG";
 
     private PaginationAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
@@ -37,13 +41,42 @@ public class MainActivity extends AppCompatActivity implements MovieView {
     private int currentPage = pageStart;
     private Presenter mPresenter;
 
+
+    public static void startActivityAndFinish(Activity source) {
+
+        Intent homeIntent = new Intent(source, MainActivity.class);
+        source.startActivity(homeIntent);
+        source.finish();
+    }
+
+    public static void startActivityAndFinish(Activity source, int id) {
+
+        Intent homeIntent = new Intent(source, MainActivity.class);
+        homeIntent.putExtra(KEY_MSG, id);
+        source.startActivity(homeIntent);
+        source.finish();
+    }
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        Intent intent = getIntent();
         initUi();
-        loadData();
+
+        if (intent.hasExtra(KEY_MSG)){
+            Log.i(TAG, "movie id in main activity = "+intent.getIntExtra(KEY_MSG,0));
+
+        }else {
+
+            loadData();
+            Log.i(TAG, "loadData");
+        }
+
     }
 
     private void initUi() {
