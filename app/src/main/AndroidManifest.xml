@@ -19,14 +19,18 @@
 
         <activity
             android:name="com.suhaib.pagination.Views.SplashScreen"
-            android:theme="@style/NoActionBar"
-            android:launchMode="singleTop"
-            >
+            android:theme="@style/NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <activity android:name="com.suhaib.pagination.Views.MainActivity"
+            android:launchMode="singleTop">
+
 
             <!-- Branch URI Scheme -->
             <intent-filter>
@@ -44,10 +48,7 @@
                 <data android:scheme="https" android:host="c01s4.test-app.link" />
                 <data android:scheme="https" android:host="c01s4-alternate.test-app.link" />
             </intent-filter>
-
         </activity>
-
-        <activity android:name="com.suhaib.pagination.Views.MainActivity" />
 
         <!-- Branch init -->
         <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_leIxL0JyaXHfRrs1G1d5vbhmADf59wEA" />

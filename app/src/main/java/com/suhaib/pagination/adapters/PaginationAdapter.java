@@ -1,5 +1,6 @@
 package com.suhaib.pagination.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,8 @@ import com.suhaib.pagination.utils.HaveNetworksUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.suhaib.pagination.Views.MovieDetails.startDetailsActivity;
 
 
 public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -238,9 +241,9 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION){
                         Movie movie = movieResults.get(pos);
-                        Intent intent = new Intent(mContext, MovieDetails.class);
-                        intent.putExtra("movie",movie);
-                        mContext.startActivity(intent);
+
+                        startDetailsActivity((MainActivity) mContext, movie.getId());
+
                         Toast.makeText(view.getContext(),movie.getOriginalTitle(),
                                 Toast.LENGTH_LONG).show();
 

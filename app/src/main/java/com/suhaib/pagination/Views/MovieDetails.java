@@ -1,5 +1,6 @@
 package com.suhaib.pagination.Views;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
@@ -15,9 +16,13 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.suhaib.pagination.R;
 import com.suhaib.pagination.entitys.Movie;
+import com.suhaib.pagination.model.MovieModel;
+import com.suhaib.pagination.presenters.DetailsView;
+import com.suhaib.pagination.presenters.MovieDetailsPresenter;
 
 import java.util.Calendar;
 
@@ -30,10 +35,14 @@ import io.branch.referral.util.LinkProperties;
 import io.branch.referral.util.ShareSheetStyle;
 
 
-public class MovieDetails extends AppCompatActivity {
+public class MovieDetails extends AppCompatActivity implements DetailsView {
 
+    private int mMovieId;
     private Movie mMovie;
+    private MovieDetailsPresenter detailsPresenter;
+
     public static final String TAG = "MovieDetails";
+    private static String KEY_MSG = "movieId";
     private CollapsingToolbarLayout mCollapsingToolbarLayout = null;
     private Intent mIntent;
     private Toolbar mToolbar;
@@ -46,6 +55,15 @@ public class MovieDetails extends AppCompatActivity {
     private TextView mReleaseData;
     private RatingBar mRatingBar;
 
+
+
+        public static void startDetailsActivity(Activity source, int id) {
+
+        Log.d(TAG, "start Activity And Finish with source and movie id");
+        Intent homeIntent = new Intent(source, MovieDetails.class);
+        homeIntent.putExtra(KEY_MSG, id);
+        source.startActivity(homeIntent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +85,7 @@ public class MovieDetails extends AppCompatActivity {
     public void setupUI() {
 
         Log.d(TAG, "parcelable move");
+
         mIntent = getIntent();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -86,28 +105,16 @@ public class MovieDetails extends AppCompatActivity {
         mPlotSynopsis = (TextView) findViewById(R.id.plotsynopsis);
         mReleaseData = (TextView) findViewById(R.id.releasedate);
         mRatingBar = (RatingBar) findViewById(R.id.userrating);
+
+        detailsPresenter = new MovieDetailsPresenter(this);
     } //end setup UI
 
     public void BaindUI() {
 
-        if (mIntent.hasExtra("movie")) {
+        if (mIntent.hasExtra(KEY_MSG)) {
 
-            mMovie = mIntent.getParcelableExtra("movie");
-
-            String movieName = mMovie.getOriginalTitle();
-            String synopsis = mMovie.getOverview();
-            double rating = mMovie.getVoteAverage();
-            String dateOfRelease = mMovie.getReleaseDate();
-
-            Log.i(TAG, "parcelable move poster path: " + getString(R.string.poster_path) + mMovie.getPosterPath());
-            Glide.with(this)
-                    .load(getString(R.string.poster_path) + mMovie.getPosterPath())
-                    .into(mPosterImage);
-
-            mNameOfMovie.setText(movieName);
-            mPlotSynopsis.setText(synopsis);
-            mReleaseData.setText(dateOfRelease);
-            mRatingBar.setRating((float) rating / 2);
+            mMovieId = mIntent.getIntExtra(KEY_MSG,0);
+            detailsPresenter.getMovie(getString(R.string.api_key),mMovieId);
 
 
         } else {
@@ -136,7 +143,7 @@ public class MovieDetails extends AppCompatActivity {
 
     public void shareButton(){
 
-        Log.i(TAG, "Share Button");
+        Log.i(TAG, "Share Button: " +mMovie.getId().toString() );
 
         BranchUniversalObject buo = new BranchUniversalObject()
                 .setCanonicalIdentifier("content/12345")
@@ -145,7 +152,7 @@ public class MovieDetails extends AppCompatActivity {
                 .setContentImageUrl(getString(R.string.poster_path) + mMovie.getPosterPath())
                 .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
                 .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                .setContentMetadata(new ContentMetadata().addCustomMetadata("key", mMovie.getId().toString()));
+                .setContentMetadata(new ContentMetadata().addCustomMetadata("key", mMovie.getId().toString() ));
 
         LinkProperties lp = new LinkProperties()
                 .setChannel("facebook")
@@ -193,4 +200,37 @@ public class MovieDetails extends AppCompatActivity {
 
     }
 
+
+    @Override
+    public void onError(Throwable e) {
+
+    }
+
+    @Override
+    public void showMessage() {
+
+        Toast.makeText(this, "Error loading data", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void displayDetailsContent(Movie movie) {
+
+        this.mMovie = movie;
+
+        String movieName = movie.getOriginalTitle();
+        String synopsis = movie.getOverview();
+        double rating = movie.getVoteAverage();
+        String dateOfRelease = movie.getReleaseDate();
+
+        Log.i(TAG, "parcelable move poster path: " + getString(R.string.poster_path) + movie.getPosterPath());
+        Glide.with(this)
+                .load(getString(R.string.poster_path) + movie.getPosterPath())
+                .into(mPosterImage);
+
+        mNameOfMovie.setText(movieName);
+        mPlotSynopsis.setText(synopsis);
+        mReleaseData.setText(dateOfRelease);
+        mRatingBar.setRating((float) rating / 2);
+
+    }
 }//end details class

@@ -17,11 +17,19 @@ import com.suhaib.pagination.R;
 import com.suhaib.pagination.adapters.PaginationAdapter;
 import com.suhaib.pagination.entitys.Movie;
 import com.suhaib.pagination.presenters.MovieView;
-import com.suhaib.pagination.presenters.Presenter;
+import com.suhaib.pagination.presenters.MainPresenter;
 import com.suhaib.pagination.utils.HaveNetworksUtils;
 import com.suhaib.pagination.utils.PaginationScrollListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+
+import io.branch.referral.Branch;
+import io.branch.referral.BranchError;
+
+import static com.suhaib.pagination.Views.MovieDetails.startDetailsActivity;
 
 public class MainActivity extends AppCompatActivity implements MovieView {
 
@@ -39,44 +47,72 @@ public class MainActivity extends AppCompatActivity implements MovieView {
     private boolean isLastPage = false;
     private int totalPages = 1;
     private int currentPage = pageStart;
-    private Presenter mPresenter;
+    private MainPresenter mPresenter;
 
 
-    public static void startActivityAndFinish(Activity source) {
+    public static void startActivityAndFinsh(Activity source) {
 
+        Log.d(TAG, "start Activity And Finish with only source");
         Intent homeIntent = new Intent(source, MainActivity.class);
         source.startActivity(homeIntent);
         source.finish();
     }
-
-    public static void startActivityAndFinish(Activity source, int id) {
-
-        Intent homeIntent = new Intent(source, MainActivity.class);
-        homeIntent.putExtra(KEY_MSG, id);
-        source.startActivity(homeIntent);
-        source.finish();
-    }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initUi();
+        loadData();
+        Log.i(TAG, "loadData");
+    }
+
+
+    @Override
+    protected void onStart() {
 
         Intent intent = getIntent();
-        initUi();
+        if (intent.hasExtra(KEY_MSG)) {
 
-        if (intent.hasExtra(KEY_MSG)){
-            Log.i(TAG, "movie id in main activity = "+intent.getIntExtra(KEY_MSG,0));
+            Log.i(TAG, "movie id in main activity = " + intent.getIntExtra(KEY_MSG, 0));
 
-        }else {
-
-            loadData();
-            Log.i(TAG, "loadData");
+            Intent detailsIntent = new Intent(this, MovieDetails.class);
+            intent.putExtra("movieId", intent.getIntExtra(KEY_MSG, 0));
+            startActivity(detailsIntent);
         }
+        branchInit();
 
+        super.onStart();
+    }// end onStart
+
+    private void branchInit() {
+        // Branch init
+        Branch instance = Branch.getInstance();
+        if (instance != null) {
+            instance.initSession(new Branch.BranchReferralInitListener() {
+                @Override
+                public void onInitFinished(JSONObject referringParams, BranchError error) {
+                    if (error == null) {
+                        Log.i("BRANCH SDK", referringParams.toString());
+
+                        try {
+
+                            Log.i(TAG, referringParams.getString("key"));
+                            int key = Integer.parseInt(referringParams.getString("key"));
+
+                            startDetailsActivity(MainActivity.this, key);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        Log.i("BRANCH SDK", error.getMessage());
+                    }
+                }
+            }, this.getIntent().getData(), this);
+        }
     }
 
     private void initUi() {
@@ -122,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     private void initPresenter() {
         if (mPresenter == null) {
-            mPresenter = new Presenter(this);
+            mPresenter = new MainPresenter(this);
         }
     }
 
@@ -183,4 +219,10 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     }
 
-}
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+}// end main activity class

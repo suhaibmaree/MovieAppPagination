@@ -4,9 +4,11 @@ import android.util.Log;
 
 import com.suhaib.pagination.api.MovieClient;
 import com.suhaib.pagination.api.MovieService;
+import com.suhaib.pagination.entitys.Movie;
 import com.suhaib.pagination.entitys.MoviesResponse;
 
 import retrofit2.Call;
+
 public class MovieModel {
 
     private static final String TAG = "MovieModel";
@@ -17,6 +19,8 @@ public class MovieModel {
         return callTopRatedMoviesApi(apiKey, currentPage);
     }
 
+
+
     private static Call<MoviesResponse> callTopRatedMoviesApi(String apiKey, int currentPage) {
         return MovieClient.getClient().create(MovieService.class).getTopRatedMovies(
                 apiKey,
@@ -24,6 +28,12 @@ public class MovieModel {
         );
     }
 
+
+    public static Call<Movie> callGetMovieById(String apiKey, int movieID) {
+
+        return MovieClient.getClient().create(MovieService.class).
+                getMovieById(movieID , apiKey);
+    }
 
 }//end movie model class
 

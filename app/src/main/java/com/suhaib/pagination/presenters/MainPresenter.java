@@ -13,7 +13,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Presenter {
+public class MainPresenter {
 
 
     private MovieModel mModel;
@@ -21,7 +21,7 @@ public class Presenter {
     private static final String TAG = "MovieAPIListener";
 
 
-    public Presenter(MovieView mView) {
+    public MainPresenter(MovieView mView) {
         this.mView = mView;
         mModel = new MovieModel();
     }
