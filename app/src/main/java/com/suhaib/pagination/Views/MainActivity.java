@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     private RecyclerView moviesList;
     private ProgressBar loadingIndicator;
+    private Button relaodButton;
 
     private static final int pageStart = 1;
     public boolean isLoading = false;
@@ -50,12 +52,20 @@ public class MainActivity extends AppCompatActivity implements MovieView {
     private MainPresenter mPresenter;
 
 
-    public static void startActivityAndFinsh(Activity source) {
+    public static void startActivityAndFinish(Activity source) {
 
         Log.d(TAG, "start Activity And Finish with only source");
         Intent homeIntent = new Intent(source, MainActivity.class);
         source.startActivity(homeIntent);
         source.finish();
+    }
+
+    public static void startActivity(Activity source) {
+
+        Log.d(TAG, "start Activity");
+        Intent homeIntent = new Intent(source, MainActivity.class);
+        source.startActivity(homeIntent);
+
     }
 
     @Override
@@ -71,16 +81,7 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     @Override
     protected void onStart() {
-
-        Intent intent = getIntent();
-        if (intent.hasExtra(KEY_MSG)) {
-
-            Log.i(TAG, "movie id in main activity = " + intent.getIntExtra(KEY_MSG, 0));
-
-            Intent detailsIntent = new Intent(this, MovieDetails.class);
-            intent.putExtra("movieId", intent.getIntExtra(KEY_MSG, 0));
-            startActivity(detailsIntent);
-        }
+        relaodButton.setVisibility(View.GONE);
         branchInit();
 
         super.onStart();
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
                             Log.i(TAG, referringParams.getString("key"));
                             int key = Integer.parseInt(referringParams.getString("key"));
-
                             startDetailsActivity(MainActivity.this, key);
 
                         } catch (JSONException e) {
@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MovieView {
     private void initUi() {
         moviesList = (RecyclerView) findViewById(R.id.main_recycler);
         loadingIndicator = (ProgressBar) findViewById(R.id.main_progress);
+        relaodButton = (Button) findViewById(R.id.reload_buuton);
         adapter = new PaginationAdapter(this);
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         moviesList.setLayoutManager(linearLayoutManager);
@@ -162,7 +163,12 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         }
     }
 
-    private void loadData() {
+    public void loadData() {
+
+        relaodButton.setVisibility(View.GONE);
+        if (currentPage <= 1) {
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
         initPresenter();
         mPresenter.getTopMovies(getAPIKey(), currentPage);
     }
@@ -176,6 +182,12 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         isLoading = loading;
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+
     /***
      *
      * implemented methods
@@ -187,6 +199,21 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         String msg = "No Internet Connection";
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
+        loadingIndicator.setVisibility(View.GONE);
+        relaodButton.setVisibility(View.VISIBLE);
+        relaodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relaodButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        loadData();
+                    }
+                });
+            }
+        });
+
+
     }
 
     @Override
@@ -194,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         if (HaveNetworksUtils.haveNetwork(this)) {
             if (currentPage == 1) {
                 loadingIndicator.setVisibility(View.GONE);
+                relaodButton.setVisibility(View.GONE);
                 adapter.addAll(movies);
 
                 if (currentPage <= total)
@@ -207,8 +235,6 @@ public class MainActivity extends AppCompatActivity implements MovieView {
                 if (currentPage != total) adapter.addLoadingFooter();
                 else isLastPage = true;
             }
-        } else {
-            adapter.addLoadingFooter();
         }
     }
 
@@ -217,12 +243,6 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
         Toast.makeText(getApplicationContext(), "can not load data", Toast.LENGTH_SHORT).show();
 
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
     }
 
 }// end main activity class

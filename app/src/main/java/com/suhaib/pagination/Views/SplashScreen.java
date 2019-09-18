@@ -19,8 +19,8 @@ public class SplashScreen extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG,"Run function in handler");
-                MainActivity.startActivityAndFinsh(SplashScreen.this);
+                Log.i(TAG, "Run function in handler");
+                MainActivity.startActivityAndFinish(SplashScreen.this);
             }
         }, SPLASH_TIME_OUT);
     }// end on create
