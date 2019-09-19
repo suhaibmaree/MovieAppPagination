@@ -43,7 +43,11 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     private RecyclerView moviesList;
     private ProgressBar loadingIndicator;
+<<<<<<< HEAD
     private Button relodeButton;
+=======
+    private Button relaodButton;
+>>>>>>> develop
 
     private static final int pageStart = 1;
     public boolean isLoading = false;
@@ -82,7 +86,11 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     @Override
     protected void onStart() {
+<<<<<<< HEAD
         relodeButton.setVisibility(View.GONE);
+=======
+        relaodButton.setVisibility(View.GONE);
+>>>>>>> develop
         branchInit();
 
         super.onStart();
@@ -119,7 +127,11 @@ public class MainActivity extends AppCompatActivity implements MovieView {
     private void initUi() {
         moviesList = (RecyclerView) findViewById(R.id.main_recycler);
         loadingIndicator = (ProgressBar) findViewById(R.id.main_progress);
+<<<<<<< HEAD
         relodeButton = (Button) findViewById(R.id.reload_buuton);
+=======
+        relaodButton = (Button) findViewById(R.id.reload_buuton);
+>>>>>>> develop
         adapter = new PaginationAdapter(this);
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         moviesList.setLayoutManager(linearLayoutManager);
@@ -166,8 +178,15 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     public void loadData() {
 
+<<<<<<< HEAD
         relodeButton.setVisibility(View.GONE);
         loadingIndicator.setVisibility(View.VISIBLE);
+=======
+        relaodButton.setVisibility(View.GONE);
+        if (currentPage <= 1) {
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
+>>>>>>> develop
         initPresenter();
         mPresenter.getTopMovies(getAPIKey(), currentPage);
     }
@@ -181,6 +200,12 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         isLoading = loading;
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+
     /***
      *
      * implemented methods
@@ -193,11 +218,19 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
         loadingIndicator.setVisibility(View.GONE);
+<<<<<<< HEAD
         relodeButton.setVisibility(View.VISIBLE);
         relodeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 relodeButton.setOnClickListener(new View.OnClickListener() {
+=======
+        relaodButton.setVisibility(View.VISIBLE);
+        relaodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relaodButton.setOnClickListener(new View.OnClickListener() {
+>>>>>>> develop
                     @Override
                     public void onClick(View v) {
                         loadData();
@@ -214,7 +247,11 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         if (HaveNetworksUtils.haveNetwork(this)) {
             if (currentPage == 1) {
                 loadingIndicator.setVisibility(View.GONE);
+<<<<<<< HEAD
                 relodeButton.setVisibility(View.GONE);
+=======
+                relaodButton.setVisibility(View.GONE);
+>>>>>>> develop
                 adapter.addAll(movies);
 
                 if (currentPage <= total)
@@ -228,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements MovieView {
                 if (currentPage != total) adapter.addLoadingFooter();
                 else isLastPage = true;
             }
+<<<<<<< HEAD
         } else {
             loadingIndicator.setVisibility(View.GONE);
             relodeButton.setVisibility(View.VISIBLE);
@@ -238,6 +276,8 @@ public class MainActivity extends AppCompatActivity implements MovieView {
                 }
             });
 
+=======
+>>>>>>> develop
         }
     }
 
@@ -248,10 +288,13 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     }
 
+<<<<<<< HEAD
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
     }
 
 
+=======
+>>>>>>> develop
 }// end main activity class

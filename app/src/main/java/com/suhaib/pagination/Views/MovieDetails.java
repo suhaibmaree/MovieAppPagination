@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.suhaib.pagination.R;
 import com.suhaib.pagination.entitys.Movie;
-import com.suhaib.pagination.model.MovieModel;
 import com.suhaib.pagination.presenters.DetailsView;
 import com.suhaib.pagination.presenters.MovieDetailsPresenter;
 
@@ -56,8 +55,7 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
     private RatingBar mRatingBar;
 
 
-
-        public static void startDetailsActivity(Activity source, int id) {
+    public static void startDetailsActivity(Activity source, int id) {
 
         Log.d(TAG, "start Activity And Finish with source and movie id");
         Intent homeIntent = new Intent(source, MovieDetails.class);
@@ -113,8 +111,8 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
 
         if (mIntent.hasExtra(KEY_MSG)) {
 
-            mMovieId = mIntent.getIntExtra(KEY_MSG,0);
-            detailsPresenter.getMovie(getString(R.string.api_key),mMovieId);
+            mMovieId = mIntent.getIntExtra(KEY_MSG, 0);
+            detailsPresenter.getMovie(getString(R.string.api_key), mMovieId);
 
 
         } else {
@@ -141,9 +139,9 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
     } //end on option item selected
 
 
-    public void shareButton(){
+    public void shareButton() {
 
-        Log.i(TAG, "Share Button: " +mMovie.getId().toString() );
+        Log.i(TAG, "Share Button: " + mMovie.getId().toString());
 
         BranchUniversalObject buo = new BranchUniversalObject()
                 .setCanonicalIdentifier("content/12345")
@@ -152,7 +150,7 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
                 .setContentImageUrl(getString(R.string.poster_path) + mMovie.getPosterPath())
                 .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
                 .setLocalIndexMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-                .setContentMetadata(new ContentMetadata().addCustomMetadata("key", mMovie.getId().toString() ));
+                .setContentMetadata(new ContentMetadata().addCustomMetadata("key", mMovie.getId().toString()));
 
         LinkProperties lp = new LinkProperties()
                 .setChannel("facebook")
@@ -182,16 +180,19 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
                 .setAsFullWidthStyle(true)
                 .setSharingTitle("Share With");
 
-        buo.showShareSheet(this, lp,  ss,  new Branch.BranchLinkShareListener() {
+        buo.showShareSheet(this, lp, ss, new Branch.BranchLinkShareListener() {
             @Override
             public void onShareLinkDialogLaunched() {
             }
+
             @Override
             public void onShareLinkDialogDismissed() {
             }
+
             @Override
             public void onLinkShareResponse(String sharedLink, String sharedChannel, BranchError error) {
             }
+
             @Override
             public void onChannelSelected(String channelName) {
             }

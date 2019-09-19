@@ -5,5 +5,6 @@
     <string name="reviews">Reviews</string>
     <string name="poster_path">https://image.tmdb.org/t/p/w185</string>
     <string name="try_again">TRY AGAIN</string>
+    <string name="movie_desc">Nowadays, user engagement is considered one of the most important metrics for the success of your app</string>
 
 </resources>

@@ -21,7 +21,11 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
                 Log.i(TAG, "Run function in handler");
+<<<<<<< HEAD
                 MainActivity.startActivityAndFinsh(SplashScreen.this);
+=======
+                MainActivity.startActivityAndFinish(SplashScreen.this);
+>>>>>>> develop
             }
         }, SPLASH_TIME_OUT);
     }// end on create
