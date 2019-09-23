@@ -3,6 +3,7 @@ package com.suhaib.pagination.Views;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,8 +21,13 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.suhaib.pagination.R;
 import com.suhaib.pagination.entitys.Movie;
+import com.suhaib.pagination.eventbus.FavoriteMovieEvent;
 import com.suhaib.pagination.presenters.DetailsView;
 import com.suhaib.pagination.presenters.MovieDetailsPresenter;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Calendar;
 
@@ -42,6 +48,8 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
 
     public static final String TAG = "MovieDetails";
     private static String KEY_MSG = "movieId";
+    private static String KEY_MOVIE = "movieId";
+
     private CollapsingToolbarLayout mCollapsingToolbarLayout = null;
     private Intent mIntent;
     private Toolbar mToolbar;
@@ -53,6 +61,7 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
     private TextView mUserRating;
     private TextView mReleaseData;
     private RatingBar mRatingBar;
+    private FloatingActionButton fab;
 
 
     public static void startDetailsActivity(Activity source, int id) {
@@ -60,6 +69,14 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
         Log.d(TAG, "start Activity And Finish with source and movie id");
         Intent homeIntent = new Intent(source, MovieDetails.class);
         homeIntent.putExtra(KEY_MSG, id);
+        source.startActivity(homeIntent);
+    }
+
+    public static void startDetailsActivity(Activity source, Movie movie) {
+
+        Log.d(TAG, "start Activity And Finish with source and movie id");
+        Intent homeIntent = new Intent(source, MovieDetails.class);
+        homeIntent.putExtra(KEY_MOVIE, movie);
         source.startActivity(homeIntent);
     }
 
@@ -105,6 +122,10 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
         mRatingBar = (RatingBar) findViewById(R.id.userrating);
 
         detailsPresenter = new MovieDetailsPresenter(this);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+
     } //end setup UI
 
     public void BaindUI() {
@@ -114,6 +135,22 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
             mMovieId = mIntent.getIntExtra(KEY_MSG, 0);
             detailsPresenter.getMovie(getString(R.string.api_key), mMovieId);
 
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mMovie.setClicked(!mMovie.isClicked());
+                    FavoriteMovieEvent movieEvent = FavoriteMovieEvent.getFavoriteEvent(FavoriteMovieEvent.SOURCE.DETAIL, mMovie);
+                    EventBus.getDefault().postSticky(movieEvent);
+                    fabStatus(mMovie.isClicked());
+                }
+            });
+
+
+        } else if (mIntent.hasExtra(KEY_MOVIE)) {
+
+            Movie movie = mIntent.getParcelableExtra(KEY_MOVIE);
+            detailsPresenter.setMovie(movie);
 
         } else {
             Toast.makeText(this, "No API Data", Toast.LENGTH_SHORT).show();
@@ -232,6 +269,39 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
         mPlotSynopsis.setText(synopsis);
         mReleaseData.setText(dateOfRelease);
         mRatingBar.setRating((float) rating / 2);
+        fabStatus(mMovie.isClicked());
 
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFavoriteEvent(FavoriteMovieEvent.MAIN movieEvent) {
+        Movie movie = movieEvent.getMovie();
+        Log.d(TAG, "move checked " + movie.isClicked());
+        if (movie.getId().equals(mMovieId)) {
+            mMovie.setClicked(movie.isClicked());
+            fabStatus(mMovie.isClicked());
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        EventBus.getDefault().register(this);
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+
+    public void fabStatus(boolean flag) {
+        if (flag)
+            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_filled));
+        else
+            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border));
+    }
+
 }//end details class

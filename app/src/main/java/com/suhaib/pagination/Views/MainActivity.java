@@ -17,11 +17,15 @@ import android.widget.Toast;
 import com.suhaib.pagination.R;
 import com.suhaib.pagination.adapters.PaginationAdapter;
 import com.suhaib.pagination.entitys.Movie;
+import com.suhaib.pagination.eventbus.FavoriteMovieEvent;
 import com.suhaib.pagination.presenters.MovieView;
 import com.suhaib.pagination.presenters.MainPresenter;
 import com.suhaib.pagination.utils.HaveNetworksUtils;
 import com.suhaib.pagination.utils.PaginationScrollListener;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,6 +72,18 @@ public class MainActivity extends AppCompatActivity implements MovieView {
 
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onFavoriteEvent(FavoriteMovieEvent.DETAIL movieEvent) {
+
+        Movie movie = movieEvent.getMovie();
+
+        Log.d(TAG, "move checked " + movie.isClicked());
+        EventBus.getDefault().removeStickyEvent(FavoriteMovieEvent.class);
+        adapter.onFavoriteEvent(movie);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,14 +94,20 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         Log.i(TAG, "loadData");
     }
 
-
     @Override
     protected void onStart() {
         relaodButton.setVisibility(View.GONE);
         branchInit();
 
+        EventBus.getDefault().register(this);
         super.onStart();
     }// end onStart
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 
     private void branchInit() {
         // Branch init

@@ -17,7 +17,7 @@ public class MovieDetailsPresenter {
         mModel = new MovieModel();
     }// end constructor
 
-    public void getMovie(String apiKey, int movieID){
+    public void getMovie(String apiKey, int movieID) {
 
         mModel.callGetMovieById(apiKey, movieID).enqueue(new Callback<Movie>() {
             @Override
@@ -33,5 +33,9 @@ public class MovieDetailsPresenter {
             }
         });
 
+    }
+
+    public void setMovie(Movie movie) {
+        mView.displayDetailsContent(movie);
     }
 }

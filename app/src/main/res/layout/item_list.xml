@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         android:layout_marginTop="@dimen/activity_margin"
@@ -34,45 +34,52 @@
             android:textStyle="bold"
             tools:text="2009 | EN" />
 
-        <TextView
-            android:id="@+id/movie_title"
-            style="@style/TextAppearance.AppCompat.Subhead"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin_content"
-            android:layout_marginLeft="@dimen/activity_margin_content"
-            android:layout_marginTop="@dimen/activity_margin_quarter"
-            android:maxLines="1"
-            tools:text="Movie Title" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_margin_content"
             android:layout_marginLeft="@dimen/activity_margin_content"
-            android:layout_marginTop="@dimen/activity_margin_half"
+
             android:ellipsize="end"
             android:orientation="horizontal"
             >
 
             <TextView
-                android:id="@+id/movie_desc"
-                style="@style/TextAppearance.AppCompat.Caption"
+                android:id="@+id/movie_title"
+                style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:maxLines="2"
-                tools:text="@string/movie_desc" />
+                android:layout_weight="7"
+                android:maxLines="1"
+                tools:text="Movie Title" />
 
-            <ImageButton
+            <ToggleButton
+                android:layout_marginTop="5dp"
                 android:id="@+id/favorite_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="30dp"
                 android:layout_weight="1"
-                android:background="#00ffffff"
-                android:src="@android:drawable/btn_star" />
+                android:textOn=""
+                android:textOff=""
+                android:text=""
+                android:background="@drawable/my_btn_toggle"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/movie_desc"
+            style="@style/TextAppearance.AppCompat.Caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_margin_content"
+            android:layout_marginStart="@dimen/activity_margin_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            tools:text="@string/movie_desc"/>
+
+
 
     </LinearLayout>
 

@@ -1,17 +1,17 @@
 package com.suhaib.pagination.adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -20,9 +20,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.suhaib.pagination.R;
 import com.suhaib.pagination.Views.MainActivity;
-import com.suhaib.pagination.Views.MovieDetails;
 import com.suhaib.pagination.entitys.Movie;
+import com.suhaib.pagination.eventbus.FavoriteMovieEvent;
 import com.suhaib.pagination.utils.HaveNetworksUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int LOADING = 1;
     private static final int FAILED = 2;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
-    public static final String TAG ="PaginationAdapter";
+    public static final String TAG = "PaginationAdapter";
 
     private List<Movie> movieResults;
     private Context mContext;
@@ -71,14 +73,13 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 viewHolder = new LoadingVH(v2);
                 break;
             case FAILED:
-                ((MainActivity)mContext).setLoading(false);
+                ((MainActivity) mContext).setLoading(false);
                 View v3 = inflater.inflate(R.layout.item_faild, parent, false);
                 viewHolder = new FailedVH(v3);
                 break;
         }
         return viewHolder;
     }
-
 
 
     @Override
@@ -92,37 +93,39 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 movieVH.mMovieTitle.setText(result.getTitle());
 
+                // fab checked
+                movieVH.mFavorite.setChecked(result.isClicked());
 
                 movieVH.mYear.setText(
-                        result.getReleaseDate().substring(0, 4)  // i want the year only
-                                + " | "
-                                + result.getOriginalLanguage().toUpperCase()
+                        result.getReleaseDate().substring(0, 4)
+                                + " | " +
+                                result.getOriginalLanguage().toUpperCase()
                 );
                 movieVH.mMovieDesc.setText(result.getOverview());
 
 
                 Glide
-                    .with(mContext)
-                    .load(BASE_URL_IMG + result.getPosterPath())
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        .with(mContext)
+                        .load(BASE_URL_IMG + result.getPosterPath())
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
 
-                            movieVH.mProgress.setVisibility(View.GONE);
-                            return false;
-                        }
+                                movieVH.mProgress.setVisibility(View.GONE);
+                                return false;
+                            }
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            // image ready, hide progress now
-                            movieVH.mProgress.setVisibility(View.GONE);
-                            return false;   // return false if you want Glide to handle everything else.
-                        }
-                    })
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-                    .centerCrop()
-                    .crossFade()
-                    .into(movieVH.mPosterImg);
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                // image ready, hide progress now
+                                movieVH.mProgress.setVisibility(View.GONE);
+                                return false;   // return false if you want Glide to handle everything else.
+                            }
+                        })
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
+                        .centerCrop()
+                        .crossFade()
+                        .into(movieVH.mPosterImg);
 
                 break;
 
@@ -144,12 +147,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        Log.d(TAG,"getItemCount " + position);
-        if(HaveNetworksUtils.haveNetwork(mContext)) {
-            Log.d(TAG,"getItemCount have internet" + position);
+        Log.d(TAG, "getItemCount " + position);
+        if (HaveNetworksUtils.haveNetwork(mContext)) {
+            Log.d(TAG, "getItemCount have internet" + position);
             return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
-        }else{
-            ((MainActivity)mContext).setLoading(false);
+        } else {
+            ((MainActivity) mContext).setLoading(false);
             return (position == movieResults.size() - 1 && isLoadingAdded) ? FAILED : ITEM;
         }
     }
@@ -213,6 +216,16 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
+    public void onFavoriteEvent(Movie event) {
+        int id = event.getId();
+
+        int index = movieResults.indexOf(new Movie(id));
+        movieResults.get(index).setClicked(event.isClicked());
+        notifyDataSetChanged();
+
+    }
+
+
    /*
    View Holders
    _________________________________________________________________________________________________
@@ -225,35 +238,52 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView mYear; // displays "year | language"
         private ImageView mPosterImg;
         private ProgressBar mProgress;
+        private ToggleButton mFavorite;
 
         public MovieVH(View itemView) {
             super(itemView);
 
-            mMovieTitle = (TextView) itemView.findViewById(R.id.movie_title);
-            mMovieDesc = (TextView) itemView.findViewById(R.id.movie_desc);
-            mYear = (TextView) itemView.findViewById(R.id.movie_year);
-            mPosterImg = (ImageView) itemView.findViewById(R.id.movie_poster);
-            mProgress = (ProgressBar) itemView.findViewById(R.id.movie_progress);
+            mMovieTitle = itemView.findViewById(R.id.movie_title);
+            mMovieDesc = itemView.findViewById(R.id.movie_desc);
+            mYear = itemView.findViewById(R.id.movie_year);
+            mPosterImg = itemView.findViewById(R.id.movie_poster);
+            mProgress = itemView.findViewById(R.id.movie_progress);
+            mFavorite = itemView.findViewById(R.id.favorite_button);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     int pos = getAdapterPosition();
-                    if (pos != RecyclerView.NO_POSITION){
-                        Movie movie = movieResults.get(pos);
+                    Movie movie = movieResults.get(pos);
 
+                    if (pos != RecyclerView.NO_POSITION) {
                         startDetailsActivity((MainActivity) mContext, movie.getId());
-
-                        Toast.makeText(view.getContext(),movie.getOriginalTitle(),
+                        Toast.makeText(view.getContext(), movie.getOriginalTitle(),
                                 Toast.LENGTH_LONG).show();
 
-                        //mContext.finish();
 
                     }
                 }
             });
-        }
-    }
+
+            mFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Movie movie= movieResults.get(getAdapterPosition());
+                    movieResults.get(getAdapterPosition()).setClicked(!movie.isClicked());
+
+                    FavoriteMovieEvent movieEvent = FavoriteMovieEvent
+                            .getFavoriteEvent(FavoriteMovieEvent.SOURCE.MAIN, movie);
+                    EventBus.getDefault().postSticky(movieEvent);
+
+                }
+            });
+
+
+        } //end movie view holder constructor
+    }  //end class
 
 
     protected class LoadingVH extends RecyclerView.ViewHolder {
