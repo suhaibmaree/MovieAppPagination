@@ -221,6 +221,7 @@ public class Movie implements Parcelable {
         dest.writeValue(this.voteCount);
         dest.writeValue(this.video);
         dest.writeValue(this.voteAverage);
+        dest.writeValue(this.isClicked);
     }
 
     protected Movie(Parcel in) {
@@ -239,6 +240,7 @@ public class Movie implements Parcelable {
         this.voteCount = (Integer) in.readValue(Integer.class.getClassLoader());
         this.video = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.voteAverage = (Double) in.readValue(Double.class.getClassLoader());
+        this.isClicked = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {

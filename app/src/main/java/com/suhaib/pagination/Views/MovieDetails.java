@@ -2,6 +2,9 @@ package com.suhaib.pagination.Views;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -42,13 +45,15 @@ import io.branch.referral.util.ShareSheetStyle;
 
 public class MovieDetails extends AppCompatActivity implements DetailsView {
 
-    private int mMovieId;
     private Movie mMovie;
     private MovieDetailsPresenter detailsPresenter;
 
     public static final String TAG = "MovieDetails";
-    private static String KEY_MSG = "movieId";
-    private static String KEY_MOVIE = "movieId";
+    private static String KEY_MSG = "KEY_MSG";
+    private static String KEY_MOVIE = "KEY_MOVIE";
+
+    private SharedPreferences mPreferences;
+    private SharedPreferences.Editor mEditor;
 
     private CollapsingToolbarLayout mCollapsingToolbarLayout = null;
     private Intent mIntent;
@@ -132,20 +137,8 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
 
         if (mIntent.hasExtra(KEY_MSG)) {
 
-            mMovieId = mIntent.getIntExtra(KEY_MSG, 0);
+            int mMovieId = mIntent.getIntExtra(KEY_MSG, 0);
             detailsPresenter.getMovie(getString(R.string.api_key), mMovieId);
-
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMovie.setClicked(!mMovie.isClicked());
-                    FavoriteMovieEvent movieEvent = FavoriteMovieEvent.getFavoriteEvent(FavoriteMovieEvent.SOURCE.DETAIL, mMovie);
-                    EventBus.getDefault().postSticky(movieEvent);
-                    fabStatus(mMovie.isClicked());
-                }
-            });
-
 
         } else if (mIntent.hasExtra(KEY_MOVIE)) {
 
@@ -269,18 +262,22 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
         mPlotSynopsis.setText(synopsis);
         mReleaseData.setText(dateOfRelease);
         mRatingBar.setRating((float) rating / 2);
-        fabStatus(mMovie.isClicked());
 
-    }
+        boolean status = movie.isClicked();
+        fabStatus(status);
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFavoriteEvent(FavoriteMovieEvent.MAIN movieEvent) {
-        Movie movie = movieEvent.getMovie();
-        Log.d(TAG, "move checked " + movie.isClicked());
-        if (movie.getId().equals(mMovieId)) {
-            mMovie.setClicked(movie.isClicked());
-            fabStatus(mMovie.isClicked());
-        }
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMovie.setClicked(!mMovie.isClicked());
+
+                FavoriteMovieEvent movieEvent = FavoriteMovieEvent
+                        .getFavoriteEvent(FavoriteMovieEvent.SOURCE.DETAIL, mMovie);
+
+                EventBus.getDefault().postSticky(movieEvent);
+                fabStatus(mMovie.isClicked());
+            }
+        });
 
     }
 
@@ -290,18 +287,39 @@ public class MovieDetails extends AppCompatActivity implements DetailsView {
         super.onStart();
     }
 
+
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onFavoriteEvent(FavoriteMovieEvent.MAIN movieEvent) {
+        Movie movie = movieEvent.getMovie();
+        EventBus.getDefault().removeStickyEvent(FavoriteMovieEvent.MAIN.class);
+
+
+        if (mMovie != null) {
+            boolean matched = mMovie.getId().compareTo(movie.getId()) == 0;
+            if (matched) {
+                mMovie.setClicked(movie.isClicked());
+                fabStatus(mMovie.isClicked());
+            }
+
+        }
+
+    }
+
 
     public void fabStatus(boolean flag) {
-        if (flag)
-            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_filled));
-        else
-            fab.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border));
+        if (flag) {
+            Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_favorite_filled);
+            fab.setImageDrawable(drawable);
+        } else {
+            Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_favorite_border);
+            fab.setImageDrawable(drawable);
+        }
     }
 
 }//end details class

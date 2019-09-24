@@ -109,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements MovieView {
         super.onStop();
     }
 
+
+
     private void branchInit() {
         // Branch init
         Branch instance = Branch.getInstance();

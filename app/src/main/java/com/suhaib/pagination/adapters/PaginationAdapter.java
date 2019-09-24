@@ -1,6 +1,8 @@
 package com.suhaib.pagination.adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +41,10 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int FAILED = 2;
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
     public static final String TAG = "PaginationAdapter";
+
+    private SharedPreferences mPreferences;
+    private SharedPreferences.Editor mEditor;
+
 
     private List<Movie> movieResults;
     private Context mContext;
@@ -126,6 +132,16 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         .centerCrop()
                         .crossFade()
                         .into(movieVH.mPosterImg);
+
+
+                //TODO : use eventbus
+//                mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//                mEditor = mPreferences.edit();
+//                if (mPreferences.getBoolean(result.getTitle(), false)) {
+//                    movieVH.mFavorite.setBackgroundResource(R.drawable.ic_favorite_filled);
+//                } else {
+//                    movieVH.mFavorite.setBackgroundResource(R.drawable.ic_favorite_border);
+//                }
 
                 break;
 
@@ -258,7 +274,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     Movie movie = movieResults.get(pos);
 
                     if (pos != RecyclerView.NO_POSITION) {
-                        startDetailsActivity((MainActivity) mContext, movie.getId());
+                        startDetailsActivity((MainActivity) mContext, movie);
                         Toast.makeText(view.getContext(), movie.getOriginalTitle(),
                                 Toast.LENGTH_LONG).show();
 
@@ -267,17 +283,18 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             });
 
+
             mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    int adapterPosition = getAdapterPosition();
 
-                    Movie movie= movieResults.get(getAdapterPosition());
-                    movieResults.get(getAdapterPosition()).setClicked(!movie.isClicked());
-
+                    Movie movie = movieResults.get(adapterPosition);
+                    movie.setClicked(!movie.isClicked());
+                    movieResults.get(adapterPosition).setClicked(movie.isClicked());
                     FavoriteMovieEvent movieEvent = FavoriteMovieEvent
                             .getFavoriteEvent(FavoriteMovieEvent.SOURCE.MAIN, movie);
                     EventBus.getDefault().postSticky(movieEvent);
-
                 }
             });
 
@@ -293,12 +310,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+
     protected class FailedVH extends RecyclerView.ViewHolder {
 
         public FailedVH(View itemView) {
             super(itemView);
         }
     }
-
 
 }
