@@ -291,7 +291,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                     Movie movie = movieResults.get(adapterPosition);
                     movie.setClicked(!movie.isClicked());
-                    movieResults.get(adapterPosition).setClicked(movie.isClicked());
+
                     FavoriteMovieEvent movieEvent = FavoriteMovieEvent
                             .getFavoriteEvent(FavoriteMovieEvent.SOURCE.MAIN, movie);
                     EventBus.getDefault().postSticky(movieEvent);

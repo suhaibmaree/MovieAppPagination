@@ -76,10 +76,11 @@ public class MainActivity extends AppCompatActivity implements MovieView {
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onFavoriteEvent(FavoriteMovieEvent.DETAIL movieEvent) {
 
+        EventBus.getDefault().removeStickyEvent(FavoriteMovieEvent.DETAIL.class);
+
         Movie movie = movieEvent.getMovie();
 
         Log.d(TAG, "move checked " + movie.isClicked());
-        EventBus.getDefault().removeStickyEvent(FavoriteMovieEvent.class);
         adapter.onFavoriteEvent(movie);
 
     }
